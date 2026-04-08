@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoTrade AI - Cek Harga & Tukar Tambah</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        body { padding-top: 2rem; background-color: #f0f2f5; }
+        .container-fluid { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .result-box { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 20px; display: none; }
+        .highlight { color: #1e88e5; font-weight: bold; font-size: 1.2rem; }
+        .verdict-good { color: #2e7d32; font-weight: bold; }
+        .verdict-bad { color: #c62828; font-weight: bold; }
+        header { text-align: center; margin-bottom: 3rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🚗 AutoTrade AI</h1>
+        <p>Cek Harga Pasar & Hitung Simulasi Tukar Tambah dengan Artificial Intelligence</p>
+    </header>
+
+    <main class="container-fluid">
+        <div class="grid">
+            
+            <div class="card">
+                <h3>📉 Mobil Lama Anda</h3>
+                <form id="formOld">
+                    <label>Merek
+                        <select id="oldBrand" required>
+                            <option value="Toyota">Toyota</option>
+                            <option value="Honda">Honda</option>
+                            <option value="Daihatsu">Daihatsu</option>
+                            <option value="Suzuki">Suzuki</option>
+                            <option value="Mitsubishi">Mitsubishi</option>
+                            <option value="Nissan">Nissan</option>
+                            <option value="Mazda">Mazda</option>
+                        </select>
+                    </label>
+                    
+                    <label>Model (Ketik Manual, mis: Avanza, Jazz)
+                        <input type="text" id="oldModel" placeholder="Contoh: Avanza" required>
+                    </label>
+
+                    <div class="grid">
+                        <label>Tahun
+                            <input type="number" id="oldYear" value="2015" required>
+                        </label>
+                        <label>KM (Jarak Tempuh)
+                            <input type="number" id="oldMileage" value="80000" required>
+                        </label>
+                    </div>
+
+                    <label>Transmisi
+                        <select id="oldTrans" required>
+                            <option value="Automatic">Automatic</option>
+                            <option value="Manual">Manual</option>
+                        </select>
+                    </label>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>📈 Mobil Incaran</h3>
+                <form id="formNew">
+                    <label>Merek
+                        <select id="newBrand" required>
+                            <option value="Toyota">Toyota</option>
+                            <option value="Honda">Honda</option>
+                            <option value="Mitsubishi" selected>Mitsubishi</option>
+                            <option value="Suzuki">Suzuki</option>
+                        </select>
+                    </label>
+                    
+                    <label>Model
+                        <input type="text" id="newModel" placeholder="Contoh: Pajero Sport" required>
+                    </label>
+
+                    <div class="grid">
+                        <label>Tahun
+                            <input type="number" id="newYear" value="2020" required>
+                        </label>
+                        <label>KM
+                            <input type="number" id="newMileage" value="20000" required>
+                        </label>
+                    </div>
+
+                    <label>Transmisi
+                        <select id="newTrans" required>
+                            <option value="Automatic">Automatic</option>
+                            <option value="Manual">Manual</option>
+                        </select>
+                    </label>
+                </form>
+            </div>
+
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="hitungTradeIn()" style="padding: 15px 40px; font-size: 1.2rem;">🔄 Hitung Tukar Tambah</button>
+        </div>
+
+        <div id="resultArea" class="result-box">
+            <div class="grid">
+                <div>
+                    <h4>💰 Penilaian Mobil Lama</h4>
+                    <p>Harga Pasar: <span id="resOldMarket">Rp 0</span></p>
+                    <p>Tawaran Dealer: <span id="resOldDealer" class="highlight">Rp 0</span></p>
+                    <small>Dealer mengambil margin ~15%</small>
+                </div>
+                <div>
+                    <h4>🏷️ Harga Mobil Incaran</h4>
+                    <p>Estimasi Harga: <span id="resNewMarket" class="highlight">Rp 0</span></p>
+                </div>
+                <div>
+                    <h4>📊 Kesimpulan</h4>
+                    <p>Anda perlu menambah dana sebesar:</p>
+                    <h2 id="resPay" style="color: #d32f2f;">Rp 0</h2>
+                    <p id="resVerdict" class="verdict-good">---</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        async function hitungTradeIn() {
+            const oldCar = {
+                brand: document.getElementById('oldBrand').value,
+                model: document.getElementById('oldModel').value,
+                year: parseInt(document.getElementById('oldYear').value),
+                mileage: parseFloat(document.getElementById('oldMileage').value),
+                transmission: document.getElementById('oldTrans').value
+            };
+            const newCar = {
+                brand: document.getElementById('newBrand').value,
+                model: document.getElementById('newModel').value,
+                year: parseInt(document.getElementById('newYear').value),
+                mileage: parseFloat(document.getElementById('newMileage').value),
+                transmission: document.getElementById('newTrans').value
+            };
+            const btn = document.querySelector('button');
+            btn.innerHTML = "⏳ Sedang Menghitung...";
+            btn.disabled = true;
+            try {
+                const response = await fetch('http://127.0.0.1:8000/predict/trade-in', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ old_car: oldCar, new_car: newCar })
+                });
+                const data = await response.json();
+                document.getElementById('resultArea').style.display = 'block';
+                const fmt = (num) => "Rp " + num.toLocaleString('id-ID');
+
+                document.getElementById('resOldMarket').innerText = fmt(data.old_car_valuation.market_price);
+                document.getElementById('resOldDealer').innerText = fmt(data.old_car_valuation.dealer_offer);
+                document.getElementById('resNewMarket').innerText = fmt(data.new_car_price);
+                document.getElementById('resPay').innerText = data.trade_in_summary.formatted_pay;
+                
+                const verdictElem = document.getElementById('resVerdict');
+                verdictElem.innerText = data.trade_in_summary.verdict;
+                if (data.trade_in_summary.verdict.includes("Cukup")) {
+                    verdictElem.className = "verdict-good";
+                } else {
+                    verdictElem.className = "verdict-bad";
+                }
+
+            } catch (error) {
+                alert("Gagal menghubungi server API. Pastikan main.py sedang berjalan!");
+                console.error(error);
+            } finally {
+                btn.innerHTML = "🔄 Hitung Tukar Tambah";
+                btn.disabled = false;
+            }
+        }
+    </script>
+
+</body>
+</html>
