@@ -1,5 +1,4 @@
 # Prediksi-Harga-Mobil-Bekas
-# 🚗 AutoTrade AI - Intelligent Used Car Trade-In System
 
 AutoTrade AI adalah aplikasi *Full-Stack Machine Learning* yang dirancang untuk memprediksi harga mobil bekas di pasar Indonesia sekaligus mensimulasikan perhitungan biaya **Tukar Tambah (Trade-In)** secara *real-time*.
 
