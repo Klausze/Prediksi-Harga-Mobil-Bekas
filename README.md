@@ -19,7 +19,7 @@ Proyek ini dibuat untuk menjembatani kompetensi di bidang **Data Science / Machi
 ```text
 HargaKendaraanBekas/
 │
-├── app/
+├── api/
 │   ├── main.py               # Server Backend API (FastAPI)
 │   └── car_price_model.pkl   # Model Machine Learning
 │
@@ -31,6 +31,7 @@ HargaKendaraanBekas/
 │   ├── 1_data_prep.py        # Script integrasi & cleaning data
 │   └── 2_train_model.py      # Script melatih Machine Learning
 │
-├── index.html            # Tampilan Website Frontend
+├── index.html                # Tampilan Website Frontend
 ├── merged_car_data.csv       # Hasil gabungan data bersih             
-└── requirements.txt          # Daftar dependencies Python
+├── requirements.txt          # Daftar dependencies Python
+└── vercel.json               
