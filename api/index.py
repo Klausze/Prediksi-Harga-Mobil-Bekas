@@ -10,31 +10,25 @@ import os
 # --- 1. INISIALISASI APP & MODEL ---
 app = FastAPI(title="Trade-In Calculator API", description="API untuk prediksi harga mobil & tukar tambah")
 
-# --- BAGIAN BARU: SETTING CORS ---
-# Ini mengizinkan Frontend (HTML) untuk mengakses Backend ini
+# mengizinkan Frontend (HTML) untuk mengakses Backend ini
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Boleh diakses dari mana saja (termasuk file:///)
+    allow_origins=["*"],  
     allow_credentials=True,
-    allow_methods=["*"],  # Boleh pakai method apa saja (GET, POST, OPTIONS, dll)
+    allow_methods=["*"],  
     allow_headers=["*"],
 )
 # --------------------------------
 
 # Load model yang sudah kamu latih
-model_path = r'c:\Users\RADIT\kulyeah\Porto\HargaKendaraanBekas\car_price_model.pkl'
+current_dir = os.path.dirname(os.path.realpath(__file__))
+model_path = os.path.join(current_dir, 'car_price_model.pkl')
 
-if not os.path.exists(model_path):
-    print(f"❌ FATAL ERROR: File model tidak ditemukan di: {model_path}")
-    print("Pastikan kamu sudah menjalankan trainModel.py dan file .pkl sudah terbentuk.")
-else:
-    try:
-        model = joblib.load(model_path)
-        print("✅ Model berhasil dimuat dari Absolute Path!")
-    except Exception as e:
-        print(f"❌ Error saat loading pickle: {e}")
-
-# ... (SISA KODE KE BAWAH SAMA PERSIS SEPERTI SEBELUMNYA) ...
+try:
+    model = joblib.load(model_path)
+    print("✅ Model berhasil dimuat di Vercel!")
+except Exception as e:
+    print(f"❌ Error saat loading pickle: {e}")
 
 class CarItem(BaseModel):
     brand: str          
